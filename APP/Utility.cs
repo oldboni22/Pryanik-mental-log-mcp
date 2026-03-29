@@ -8,12 +8,9 @@ public static class Utility
     {
         public IServiceCollection AddApp()
         {
-            return services.AddEmbedService();
-        }
-        
-        private IServiceCollection AddEmbedService()
-        {
-            return services.AddSingleton<IEmbedService, LocalEmbedService>();
+            return services
+                .AddSingleton<IEmbedService, LocalEmbedService>()
+                .AddScoped<LogService>();
         }
     }
 }
