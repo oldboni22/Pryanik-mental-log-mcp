@@ -3,7 +3,7 @@ using Domain.Interfaces;
 
 namespace Domain.Entities;
 
-public sealed class EntryChunk : IText
+public sealed class EntryChunk : IText, IId
 {
     public Guid Id { get; init; }
     

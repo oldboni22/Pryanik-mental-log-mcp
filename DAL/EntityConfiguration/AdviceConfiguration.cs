@@ -9,5 +9,6 @@ public sealed class AdviceConfiguration : IEntityTypeConfiguration<Advice>
     public void Configure(EntityTypeBuilder<Advice> builder)
     {
         builder.HasKey(advice => advice.Id);
+        builder.FixGuidConversion();
     }
 }

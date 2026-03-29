@@ -10,6 +10,7 @@ public sealed class LogConfiguration : IEntityTypeConfiguration<LogEntry>
     public void Configure(EntityTypeBuilder<LogEntry> builder)
     {
         builder.HasKey(entry => entry.Id);
+        builder.FixGuidConversion();
         
         builder
             .HasMany(entry => entry.Chunks)

@@ -2,7 +2,7 @@
 
 namespace Domain.Entities;
 
-public sealed class LogEntry : ITimeStamp, IText
+public sealed class LogEntry : ITimeStamp, IText, IId
 {
     public Guid Id { get; init; }
     

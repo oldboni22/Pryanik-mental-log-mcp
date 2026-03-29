@@ -9,6 +9,7 @@ public sealed class ChunkConfiguration : IEntityTypeConfiguration<EntryChunk>
     public void Configure(EntityTypeBuilder<EntryChunk> builder)
     {
         builder.HasKey(chunk => chunk.Id);
+        builder.FixGuidConversion();
         
         builder.HasIndex(chunk => new{ chunk.EntryId, chunk.Number }).IsUnique();
     }

@@ -1,4 +1,6 @@
+using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -33,5 +35,17 @@ public static class Utility
         {
             Directory.CreateDirectory(LogContext.DbDir);
         }
-    } 
+    }
+
+    extension<T>(EntityTypeBuilder<T> builder) where T : class, IId
+    {
+        public void FixGuidConversion()
+        {
+            builder.Property(x => x.Id)
+                .HasConversion(
+                v => v.ToString().ToLowerInvariant(), 
+                v => Guid.Parse(v.ToString())
+            );
+        }
+    }
 }

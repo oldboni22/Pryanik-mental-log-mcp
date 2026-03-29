@@ -80,8 +80,9 @@ public sealed class LogService(LogContext context, IEmbedService embed)
     {
         return await context.Entries
             .AsNoTracking()
+            .Where(e => e.Id == entryId)
             .Select(e => new FullEntryModel(e.Id, e.Summary, e.Text, e.TimeStamp))
-            .FirstOrDefaultAsync(e => e.EntryId == entryId);
+            .FirstOrDefaultAsync();
     }
 
     public async Task<List<ChunkModel>> GetSemanticChunks(string query, int outputLimit, float minScore)
@@ -144,8 +145,9 @@ public sealed class LogService(LogContext context, IEmbedService embed)
     {
         return await context.Advices
             .AsNoTracking()
+            .Where(a => a.Id == adviceId)
             .Select(a => new FullAdviceModel(a.Id, a.Text, a.Topic, a.Summary, a.TimeStamp, a.SourceEntryId))
-            .FirstOrDefaultAsync(a => a.AdviceId == adviceId);
+            .FirstOrDefaultAsync();
     }
 
     public async Task<List<AdviceSummaryModel>> GetSemanticAdviceSummary(string query, int outputLimit, float minScore)
