@@ -1,8 +1,10 @@
-namespace Domain;
+namespace Domain.Entities;
 
-public sealed class Advice
+public sealed class Advice : ITimeStamp
 {
     public Guid Id { get; init; }
+    
+    public DateTime TimeStamp { get; set; }
     
     public Guid? SourceEntryId { get; init; } 
     
@@ -11,6 +13,6 @@ public sealed class Advice
     public required string Topic { get; init; }
     
     public required string Summary { get; init; }
-    
+
     public required string Text { get; init; }
 }
