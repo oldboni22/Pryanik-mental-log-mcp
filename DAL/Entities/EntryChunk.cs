@@ -9,9 +9,7 @@ public sealed class EntryChunk : IText, IId
     
     public Guid EntryId { get; init; }
 
-    public int Number { get; init; }
-    
-    public int TotalChunks { get; init; }
+    public required int Number { get; init; }
     
     public required string Text { get; init; }
     

@@ -12,6 +12,7 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
         var entry = new LogEntry
         {
             Summary = summary,
+            TotalChunks =  chunks.Length,
             Text = string.Join('\n', chunks)
         };
 
@@ -24,7 +25,6 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
                 Number = i + 1,
                 Text = chunks[i],
                 Embedding = embedding,
-                TotalChunks = chunks.Length,
                 Entry = entry
             };
             
@@ -89,7 +89,7 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
             .Select(c => new
             {
                 model = new ChunkModel(
-                    c.Text, c.EntryId, c.Entry.Summary, c.Entry.TimeStamp, c.Number, c.TotalChunks, c.Entry.TextLength),
+                    c.Text, c.EntryId, c.Entry.Summary, c.Entry.TimeStamp, c.Number, c.Entry.TotalChunks, c.Entry.TextLength),
                 id = c.Id,
             })
             .ToListAsync();
@@ -103,7 +103,7 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
             .AsNoTracking()
             .Where(c => c.EntryId == entryId && c.Number == number)
             .Select(c => new ChunkModel(
-                c.Text, c.EntryId, c.Entry.Summary, c.Entry.TimeStamp,c.Number, c.TotalChunks, c.Entry.TextLength))
+                c.Text, c.EntryId, c.Entry.Summary, c.Entry.TimeStamp,c.Number, c.Entry.TotalChunks, c.Entry.TextLength))
             .FirstOrDefaultAsync();
     }
 }
