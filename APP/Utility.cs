@@ -1,3 +1,4 @@
+using APP.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace APP;
@@ -10,7 +11,8 @@ public static class Utility
         {
             return services
                 .AddSingleton<IEmbedService, LocalEmbedService>()
-                .AddScoped<LogService>();
+                .AddScoped<EntryService>()
+                .AddScoped<AdviceService>();
         }
     }
 }

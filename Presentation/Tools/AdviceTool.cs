@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Text.Json;
 using APP;
+using APP.Services;
 using ModelContextProtocol.Server;
 
 namespace Presentation.Tools;
@@ -12,7 +13,7 @@ public static class AdviceTool
     
     [McpServerTool, Description("Creates a new advice.")]
     public static async Task<string> CreateAdvice(
-        LogService service,
+        AdviceService service,
         [Description("The topic of the advice.")] string topic,
         [Description("The summary of the advice.")] string summary,
         [Description("The text of the advice.")] string text,
@@ -25,7 +26,7 @@ public static class AdviceTool
 
     [McpServerTool, Description("Remove a specific advice.")]
     public static async Task<string> RemoveAdvice(
-        LogService service,
+        AdviceService service,
         [Description("The id of the desired advice.")] Guid adviceId)
     {
         await service.RemoveAdvice(adviceId);
@@ -35,7 +36,7 @@ public static class AdviceTool
     
     [McpServerTool, Description("Get recent advice summaries.")]
     public static async Task<string> GetRecentAdviceSummaries(
-        LogService service,
+        AdviceService service,
         [Description(LimitDescription)] int outputLimit)
     {
         var summaries = await service.GetRecentAdviceSummaries(outputLimit);
@@ -44,7 +45,7 @@ public static class AdviceTool
 
     [McpServerTool, Description("Get summaries of the advices related to the target entry.")]
     public static async Task<string> GetEntryAdviceSummaries(
-        LogService service,
+        AdviceService service,
         [Description("The id of the target entry.")] Guid entryId)
     {
         var summaries = await service.GetEntryAdviceSummaries(entryId);
@@ -53,7 +54,7 @@ public static class AdviceTool
     
     [McpServerTool, Description("Get full content of the advice.")]
     public static async Task<string> GetFullAdvice(
-        LogService service,
+        AdviceService service,
         [Description("The id of the desired advice.")] Guid adviceId)
     {
         var advice = await service.GetFullAdvice(adviceId);
@@ -64,7 +65,7 @@ public static class AdviceTool
 
     [McpServerTool, Description("Get summaries of advices matching the query.")]
     public static async Task<string> GetSemanticAdviceSummary(
-        LogService service,
+        AdviceService service,
         [Description("The query.")] string query,
         [Description(LimitDescription)] int outputLimit,
         [Description("The minimum similarity score threshold.")] float minScore)

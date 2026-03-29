@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Text.Json;
 using APP;
+using APP.Services;
 using ModelContextProtocol.Server;
 
 namespace Presentation.Tools;
@@ -12,7 +13,7 @@ public static class EntryTool
 
     [McpServerTool, Description("Creates a new log entry divided into chunks.")]
     public static async Task<string> CreateEntry(
-        LogService service,
+        EntryService service,
         [Description("The summary of the entry.")] string summary,
         [Description("The text of the entry, split into an array of chunks. CRITICAL: Split the text into logical, self-contained units to optimize for RAG semantic search. Each chunk MUST NOT exceed 10 sentences. Do not break thoughts in the middle.")] 
         string[] chunks)
@@ -24,7 +25,7 @@ public static class EntryTool
 
     [McpServerTool, Description("Removes a specific log entry.")]
     public static async Task<string> RemoveEntry(
-        LogService service,
+        EntryService service,
         [Description("The id of the desired entry.")] Guid entryId)
     {
         await service.RemoveEntry(entryId);
@@ -34,7 +35,7 @@ public static class EntryTool
 
     [McpServerTool, Description("Get recent entry summaries.")]
     public static async Task<string> GetRecentEntrySummaries(
-        LogService service,
+        EntryService service,
         [Description(LimitDescription)] int outputLimit)
     {
         var summaries = await service.GetRecentEntrySummaries(outputLimit);
@@ -43,7 +44,7 @@ public static class EntryTool
 
     [McpServerTool, Description("Get full content of the log entry.")]
     public static async Task<string> GetFullEntry(
-        LogService service,
+        EntryService service,
         [Description("The id of the desired entry.")] Guid entryId)
     {
         var entry = await service.GetFullEntry(entryId);
@@ -54,7 +55,7 @@ public static class EntryTool
 
     [McpServerTool, Description("Get semantic entry chunks matching the query.")]
     public static async Task<string> GetSemanticChunks(
-        LogService service,
+        EntryService service,
         [Description("The query for semantic search.")] string query,
         [Description(LimitDescription)] int outputLimit,
         [Description("The minimum similarity score threshold.")] float minScore)
@@ -65,7 +66,7 @@ public static class EntryTool
 
     [McpServerTool, Description("Get a specific chunk of an entry by its number.")]
     public static async Task<string> GetChunk(
-        LogService service,
+        EntryService service,
         [Description("The id of the target entry.")] Guid entryId,
         [Description("The ordinal number of the chunk.")] int number)
     {
