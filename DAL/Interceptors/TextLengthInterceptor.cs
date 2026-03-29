@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Domain.Interceptors;
 
-public sealed class TimeStampsInterceptor : ISaveChangesInterceptor
+public sealed class TextLengthInterceptor : ISaveChangesInterceptor
 {
     public InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
-        SetTimeStamps(eventData);
+        SetLength(eventData);
         
         return result;
     }
@@ -16,27 +16,27 @@ public sealed class TimeStampsInterceptor : ISaveChangesInterceptor
     public ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result,
         CancellationToken cancellationToken = new CancellationToken())
     {
-        SetTimeStamps(eventData);
+        SetLength(eventData);
         
         return new ValueTask<InterceptionResult<int>>(result);
     }
 
-    private static void SetTimeStamps(DbContextEventData eventData)
+    private static void SetLength(DbContextEventData eventData)
     {
         var entities = eventData!.Context!.ChangeTracker
             .Entries()
             .Where(entry => entry is
             {
-                Entity: ITimeStamp,
+                Entity: IText,
                 State: EntityState.Added
             })
             .ToList();
 
         foreach (var entry in entities)
         {
-            var entity = (ITimeStamp)entry.Entity;
+            var entity = (IText)entry.Entity;
             
-            entity.TimeStamp = DateTime.UtcNow;
+            entity.TextLength = entity.Text.Length;
         }
     }
 }

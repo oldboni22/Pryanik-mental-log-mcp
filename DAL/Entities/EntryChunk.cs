@@ -1,8 +1,9 @@
 using System.Text.Json.Serialization;
+using Domain.Interfaces;
 
 namespace Domain.Entities;
 
-public sealed class EntryChunk
+public sealed class EntryChunk : IText
 {
     public Guid Id { get; init; }
     
@@ -13,6 +14,8 @@ public sealed class EntryChunk
     public int TotalChunks { get; init; }
     
     public required string Text { get; init; }
+    
+    public int TextLength { get; set; }
 
     public required float[] Embedding { get; init; }
     

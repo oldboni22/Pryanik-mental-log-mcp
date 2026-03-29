@@ -18,7 +18,7 @@ public sealed class LogContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.AddInterceptors(new TimeStampsInterceptor());
+        optionsBuilder.AddInterceptors(new TimeStampsInterceptor(), new TextLengthInterceptor());
 
         optionsBuilder.UseSqlite($"Data Source={DbPath}");
     }

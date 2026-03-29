@@ -1,6 +1,8 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Interfaces;
 
-public sealed class LogEntry : ITimeStamp
+namespace Domain.Entities;
+
+public sealed class LogEntry : ITimeStamp, IText
 {
     public Guid Id { get; init; }
     
@@ -9,6 +11,8 @@ public sealed class LogEntry : ITimeStamp
     public required string Summary { get; init; }
     
     public required string Text { get; init; }
+    
+    public int TextLength { get; set; }
 
     public IEnumerable<EntryChunk> Chunks { get; init; } = [];
     
