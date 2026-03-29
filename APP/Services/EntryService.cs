@@ -89,7 +89,7 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
             .Select(c => new
             {
                 model = new ChunkModel(
-                    c.Text, c.EntryId, c.Entry.Summary, c.Entry.TimeStamp, c.Number, c.TotalChunks),
+                    c.Text, c.EntryId, c.Entry.Summary, c.Entry.TimeStamp, c.Number, c.TotalChunks, c.Entry.TextLength),
                 id = c.Id,
             })
             .ToListAsync();
@@ -103,7 +103,7 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
             .AsNoTracking()
             .Where(c => c.EntryId == entryId && c.Number == number)
             .Select(c => new ChunkModel(
-                c.Text, c.EntryId, c.Entry.Summary, c.Entry.TimeStamp,c.Number, c.TotalChunks))
+                c.Text, c.EntryId, c.Entry.Summary, c.Entry.TimeStamp,c.Number, c.TotalChunks, c.Entry.TextLength))
             .FirstOrDefaultAsync();
     }
 }
