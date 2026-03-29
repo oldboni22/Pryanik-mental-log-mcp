@@ -13,7 +13,7 @@ public static class Utility
         
         private IServiceCollection AddEmbedService()
         {
-            return services.AddSingleton<ILocalEmbedService, LocalEmbedService>();
+            return services.AddSingleton<IEmbedService, LocalEmbedService>();
         }
     }
 }
