@@ -4,12 +4,12 @@ using Microsoft.ML.Tokenizers;
 
 namespace APP;
 
-public interface ILocalEmbedService
+public interface IEmbedService
 {
     float[] GenerateEmbedding(string text);
 }
 
-public sealed class LocalEmbedService : IDisposable, ILocalEmbedService
+public sealed class LocalEmbedService : IDisposable, IEmbedService
 {
     private static readonly string Dir = Path.Combine(AppContext.BaseDirectory, "Models");
     
