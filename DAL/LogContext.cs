@@ -8,7 +8,7 @@ public sealed class LogContext : DbContext
 {
     public static readonly string DbDir = Path.Combine(AppContext.BaseDirectory, "Data");
     
-    private static readonly string DbPath = $"{DbDir}/log.db";
+    private static readonly string DbPath = Path.Combine(DbDir, "log.db");
     
     public DbSet<LogEntry> Entries { get; set; }
     
