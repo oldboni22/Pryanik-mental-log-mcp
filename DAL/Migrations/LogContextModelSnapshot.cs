@@ -38,6 +38,9 @@ namespace Domain.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("TextLength")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("TEXT");
 
@@ -72,6 +75,9 @@ namespace Domain.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("TextLength")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("TotalChunks")
                         .HasColumnType("INTEGER");
 
@@ -96,6 +102,9 @@ namespace Domain.Migrations
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("TextLength")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("TEXT");

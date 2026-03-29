@@ -178,7 +178,7 @@ public sealed class LogService(LogContext context, IEmbedService embed)
         return results.OrderBy(r => matchesIds.IndexOf(r.AdviceId)).ToList();
     }
 
-    public async Task<List<AdviceSummaryModel>> GetEntriesAdvices(Guid entryId)
+    public async Task<List<AdviceSummaryModel>> GetEntryAdviceSummaries(Guid entryId)
     {
         return await context.Advices
             .AsNoTracking()
