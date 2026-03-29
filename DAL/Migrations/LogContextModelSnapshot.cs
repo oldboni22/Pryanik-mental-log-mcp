@@ -23,6 +23,10 @@ namespace Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.PrimitiveCollection<string>("Embedding")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid?>("SourceEntryId")
                         .HasColumnType("TEXT");
 
@@ -50,15 +54,19 @@ namespace Domain.Migrations
 
             modelBuilder.Entity("Domain.Entities.EntryChunk", b =>
                 {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.PrimitiveCollection<string>("Embedding")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("EntryId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Number")
                         .HasColumnType("INTEGER");
-
-                    b.PrimitiveCollection<string>("Embedding")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -67,7 +75,10 @@ namespace Domain.Migrations
                     b.Property<int>("TotalChunks")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("EntryId", "Number");
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntryId", "Number")
+                        .IsUnique();
 
                     b.ToTable("EntryChunks");
                 });

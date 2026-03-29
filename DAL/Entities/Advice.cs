@@ -15,4 +15,6 @@ public sealed class Advice : ITimeStamp
     public required string Summary { get; init; }
 
     public required string Text { get; init; }
+    
+    public required float[] Embedding { get; init; }
 }

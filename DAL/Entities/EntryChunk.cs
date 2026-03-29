@@ -1,7 +1,11 @@
+using System.Text.Json.Serialization;
+
 namespace Domain.Entities;
 
 public sealed class EntryChunk
 {
+    public Guid Id { get; init; }
+    
     public Guid EntryId { get; init; }
 
     public int Number { get; init; }
