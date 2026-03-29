@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{AAF177F5-B38B-4BDC-B1D5-7520D4A4D09F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentation", "Presentation\Presentation.csproj", "{FDA861E7-C2AF-4235-8CA4-EE3A02C24F32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APP", "APP\APP.csproj", "{585945D4-5D29-4BD7-8B47-8C4F1FF6A944}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{AAF177F5-B38B-4BDC-B1D5-7520D4A4D09F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAF177F5-B38B-4BDC-B1D5-7520D4A4D09F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AAF177F5-B38B-4BDC-B1D5-7520D4A4D09F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDA861E7-C2AF-4235-8CA4-EE3A02C24F32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA861E7-C2AF-4235-8CA4-EE3A02C24F32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDA861E7-C2AF-4235-8CA4-EE3A02C24F32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA861E7-C2AF-4235-8CA4-EE3A02C24F32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{585945D4-5D29-4BD7-8B47-8C4F1FF6A944}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{585945D4-5D29-4BD7-8B47-8C4F1FF6A944}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{585945D4-5D29-4BD7-8B47-8C4F1FF6A944}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{585945D4-5D29-4BD7-8B47-8C4F1FF6A944}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
