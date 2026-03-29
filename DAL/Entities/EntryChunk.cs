@@ -18,6 +18,6 @@ public sealed class EntryChunk : IText
     public int TextLength { get; set; }
 
     public required float[] Embedding { get; init; }
-    
-    public LogEntry Entry { get; init; }
+
+    public LogEntry Entry { get; init; } = null!;
 }

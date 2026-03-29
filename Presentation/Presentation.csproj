@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.5" />
+      <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.24.4" />
       <PackageReference Include="ModelContextProtocol" Version="1.2.0" />
     </ItemGroup>
 
@@ -17,7 +18,7 @@
         <None Update="Models\model_quantized.onnx">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Update="Models\tokenizer.json">
+        <None Update="Models\vocab.txt">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>

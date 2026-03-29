@@ -14,7 +14,7 @@ public sealed class LogEntry : ITimeStamp, IText
     
     public int TextLength { get; set; }
 
-    public IEnumerable<EntryChunk> Chunks { get; init; } = [];
+    public IEnumerable<EntryChunk> Chunks { get; init; } = new List<EntryChunk>();
     
-    public IEnumerable<Advice> Advices { get; init; } = [];
+    public IEnumerable<Advice> Advices { get; init; } = new List<Advice>();
 }
