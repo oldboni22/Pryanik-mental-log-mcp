@@ -6,7 +6,12 @@ public static class Utility
 {
     extension(IServiceCollection services)
     {
-        public IServiceCollection AddEmbedService()
+        public IServiceCollection AddApp()
+        {
+            return services.AddEmbedService();
+        }
+        
+        private IServiceCollection AddEmbedService()
         {
             return services.AddSingleton<ILocalEmbedService, LocalEmbedService>();
         }
