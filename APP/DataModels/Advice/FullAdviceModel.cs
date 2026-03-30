@@ -1,3 +1,3 @@
-namespace APP.DataModels;
+namespace APP.DataModels.Advice;
 
 public sealed record FullAdviceModel(Guid AdviceId, string FullText, string Topic, string Summary, DateTime TimeStamp, Guid? EntryId);

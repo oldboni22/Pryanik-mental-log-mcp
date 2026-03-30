@@ -1,4 +1,5 @@
 using APP.DataModels;
+using APP.DataModels.Entry;
 using Domain;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
