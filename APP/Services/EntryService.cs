@@ -76,7 +76,7 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
             .ToListAsync();
         
         var matchesIds = chunksMetadata
-            .Select(res => new {id = res.id, score = CalculateSimilarity(queryVec, res.vec)})
+            .Select(res => new { res.id, score = CalculateSimilarity(queryVec, res.vec)})
             .Where(res => res.score >= minScore)
             .OrderByDescending(res => res.score)
             .Select(res => res.id)
