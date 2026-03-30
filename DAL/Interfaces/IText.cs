@@ -2,7 +2,7 @@ namespace Domain.Interfaces;
 
 public interface IText
 {
-    public string Text { get; init; }
+    string Text { get; }
     
-    public int TextLength { get; set; }
+    int TextLength { set; }
 }
