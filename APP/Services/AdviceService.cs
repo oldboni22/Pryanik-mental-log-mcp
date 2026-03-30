@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace APP.Services;
 
-public sealed class AdviceService(LogContext context, IEmbedService embed) : ServiceBase
+public sealed class AdviceService(LogContext context, IEmbedService embed) : ServiceWithEmbeddingBase(embed)
 {
     public async Task CreateAdvice(string topic, string summary, string text, Guid? sourceEntryId)
     {
-        var embedding = embed.GenerateEmbedding($"topic: {topic}, summary: {summary}");
+        var embedding = EmbedService.GenerateEmbedding($"topic: {topic}, summary: {summary}");
         
         var advice = new Advice
         {
@@ -52,7 +52,7 @@ public sealed class AdviceService(LogContext context, IEmbedService embed) : Ser
 
     public async Task<List<AdviceSummaryModel>> GetSemanticAdviceSummary(string query, int outputLimit, float minScore)
     {
-        var queryVec = embed.GenerateEmbedding(query);
+        var queryVec = EmbedService.GenerateEmbedding(query);
         
         var advicesMetadata = await context.Advices
             .AsNoTracking()

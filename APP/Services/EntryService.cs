@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace APP.Services;
 
-public sealed class EntryService(LogContext context, IEmbedService embed) : ServiceBase
+public sealed class EntryService(LogContext context, IEmbedService embed) : ServiceWithEmbeddingBase(embed)
 {
     public async Task CreateEntry(string summary, string[] chunks)
     {
@@ -18,7 +18,7 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
 
         for (int i = 0; i < chunks.Length; i++)
         {
-            var embedding = embed.GenerateEmbedding(chunks[i]);
+            var embedding = EmbedService.GenerateEmbedding(chunks[i]);
 
             var chunk = new EntryChunk
             {
@@ -63,7 +63,7 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
 
     public async Task<List<ChunkModel>> GetSemanticChunks(string query, int outputLimit, float minScore)
     {
-        var queryVec = embed.GenerateEmbedding(query);
+        var queryVec = EmbedService.GenerateEmbedding(query);
         
         var chunksMetadata = await context.EntryChunks
             .AsNoTracking()
