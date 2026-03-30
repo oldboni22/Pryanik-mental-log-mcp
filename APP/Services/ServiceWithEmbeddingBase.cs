@@ -29,10 +29,10 @@ public abstract class ServiceWithEmbeddingBase(LogContext context, IEmbedService
 
         var metadata = await context.Set<TEntity>()
             .AsNoTracking()
-            .Select(a => new
+            .Select(x => new
             {
-                vec = a.Embedding,
-                id = a.Id,
+                vec = x.Embedding,
+                id = x.Id,
             })
             .ToListAsync();
 
@@ -46,7 +46,7 @@ public abstract class ServiceWithEmbeddingBase(LogContext context, IEmbedService
 
         var results = await context.Set<TEntity>()
             .AsNoTracking()
-            .Where(a => matchesIds.Contains(a.Id))
+            .Where(x => matchesIds.Contains(x.Id))
             .Select(materializer)
             .ToListAsync();
 
