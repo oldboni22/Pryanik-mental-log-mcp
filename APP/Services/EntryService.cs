@@ -9,7 +9,7 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
 {
     public async Task CreateEntry(string summary, string[] chunks)
     {
-        var entry = new LogEntry
+        var entry = new Entry
         {
             Summary = summary,
             TotalChunks =  chunks.Length,

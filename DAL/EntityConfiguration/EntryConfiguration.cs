@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Domain.EntityConfiguration;
 
-public sealed class LogConfiguration : IEntityTypeConfiguration<LogEntry>
+public sealed class EntryConfiguration : IEntityTypeConfiguration<Entry>
 {
-    public void Configure(EntityTypeBuilder<LogEntry> builder)
+    public void Configure(EntityTypeBuilder<Entry> builder)
     {
         builder.HasKey(entry => entry.Id);
         builder.FixGuidConversion();
@@ -23,5 +23,10 @@ public sealed class LogConfiguration : IEntityTypeConfiguration<LogEntry>
             .WithOne(advice => advice.SourceEntry)
             .HasForeignKey(advice => advice.SourceEntryId)
             .OnDelete(DeleteBehavior.SetNull);
+        
+        builder.HasMany(entry => entry.TraitRelations)
+            .WithOne()
+            .HasForeignKey(entry => entry.EntryId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

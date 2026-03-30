@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Domain.EntityConfiguration;
 
-public sealed class ChunkConfiguration : IEntityTypeConfiguration<EntryChunk>
+public sealed class EntryChunkConfiguration : IEntityTypeConfiguration<EntryChunk>
 {
     public void Configure(EntityTypeBuilder<EntryChunk> builder)
     {

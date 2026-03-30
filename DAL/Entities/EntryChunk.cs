@@ -17,5 +17,5 @@ public sealed class EntryChunk : IText, IId
 
     public required float[] Embedding { get; init; }
 
-    public LogEntry Entry { get; init; } = null!;
+    public Entry Entry { get; init; } = null!;
 }

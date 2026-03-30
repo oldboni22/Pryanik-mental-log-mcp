@@ -10,11 +10,15 @@ public sealed class LogContext : DbContext
     
     private static readonly string DbPath = Path.Combine(DbDir, "log.db");
     
-    public DbSet<LogEntry> Entries { get; set; }
+    public DbSet<Entry> Entries { get; set; }
     
     public DbSet<EntryChunk> EntryChunks { get; set; }
     
     public DbSet<Advice>  Advices { get; set; }
+    
+    public DbSet<Trait>  Traits { get; set; }
+    
+    public DbSet<Medication>  Medications { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

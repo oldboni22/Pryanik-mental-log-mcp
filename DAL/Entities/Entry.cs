@@ -2,7 +2,7 @@
 
 namespace Domain.Entities;
 
-public sealed class LogEntry : ITimeStamp, IText, IId
+public sealed class Entry : ITimeStamp, IText, IId
 {
     public Guid Id { get; init; }
     
@@ -19,4 +19,6 @@ public sealed class LogEntry : ITimeStamp, IText, IId
     public IEnumerable<EntryChunk> Chunks { get; init; } = new List<EntryChunk>();
     
     public IEnumerable<Advice> Advices { get; init; } = new List<Advice>();
+    
+    public IEnumerable<TraitEntryRelation> TraitRelations { get; init; } = new List<TraitEntryRelation>();
 }
