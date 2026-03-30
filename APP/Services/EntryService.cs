@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using APP.DataModels;
 using APP.DataModels.Entry;
 using Domain;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace APP.Services;
 
-public sealed class EntryService(LogContext context, IEmbedService embed) : ServiceWithEmbeddingBase(embed)
+public sealed class EntryService(LogContext context, IEmbedService embed) : ServiceWithEmbeddingBase(context, embed)
 {
     public async Task CreateEntry(string summary, string[] chunks)
     {
@@ -29,23 +30,23 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
                 Entry = entry
             };
             
-            context.EntryChunks.Add(chunk);
+            LogContext.EntryChunks.Add(chunk);
         }
         
-        context.Add(entry);
-        await context.SaveChangesAsync();
+        LogContext.Add(entry);
+        await LogContext.SaveChangesAsync();
     }
 
     public async Task RemoveEntry(Guid entryId)
     {
-        await context.Entries
+        await LogContext.Entries
             .Where(e=> e.Id == entryId)
             .ExecuteDeleteAsync();
     }
     
     public async Task<List<EntrySummaryModel>> GetRecentEntrySummaries(int outputLimit)
     {
-        return await context.Entries
+        return await LogContext.Entries
             .AsNoTracking()
             .OrderByDescending(e => e.TimeStamp)
             .Take(outputLimit)
@@ -55,52 +56,33 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
 
     public async Task<FullEntryModel?> GetFullEntry(Guid entryId)
     {
-        return await context.Entries
+        return await LogContext.Entries
             .AsNoTracking()
             .Where(e => e.Id == entryId)
             .Select(e => new FullEntryModel(e.Id, e.Summary, e.Text, e.TimeStamp))
             .FirstOrDefaultAsync();
     }
 
+    private static readonly Expression<Func<EntryChunk, ChunkModel>> ChunkMaterializer =
+        c => new ChunkModel(c.Text, c.EntryId, c.Entry.Summary, c.Entry.TimeStamp, c.Number, c.Entry.TotalChunks, c.Entry.TextLength)
+        {
+            Id = c.Id,
+        };
+
     public async Task<List<ChunkModel>> GetSemanticChunks(string query, int outputLimit, float minScore)
     {
-        var queryVec = EmbedService.GenerateEmbedding(query);
-        
-        var chunksMetadata = await context.EntryChunks
-            .AsNoTracking()
-            .Select(c => new
-            {
-                vec = c.Embedding,
-                id =  c.Id,
-            })
-            .ToListAsync();
-        
-        var matchesIds = chunksMetadata
-            .Select(res => new { res.id, score = CalculateSimilarity(queryVec, res.vec)})
-            .Where(res => res.score >= minScore)
-            .OrderByDescending(res => res.score)
-            .Select(res => res.id)
-            .Take(outputLimit)
-            .ToList();
-        
-        var results = await context.EntryChunks
-            .AsNoTracking()
-            .Include(c => c.Entry)
-            .Where(c => matchesIds.Contains(c.Id))
-            .Select(c => new
-            {
-                model = new ChunkModel(
-                    c.Text, c.EntryId, c.Entry.Summary, c.Entry.TimeStamp, c.Number, c.Entry.TotalChunks, c.Entry.TextLength),
-                id = c.Id,
-            })
-            .ToListAsync();
-        
-        return results.OrderBy(r => matchesIds.IndexOf(r.id)).Select(r => r.model).ToList();
+        return await GetSemantic(
+            LogContext,
+            EmbedService,
+            ChunkMaterializer,
+            query,
+            outputLimit,
+            minScore);
     }
 
     public async Task<ChunkModel?> GetChunk(Guid entryId, int number)
     {
-        return await context.EntryChunks
+        return await LogContext.EntryChunks
             .AsNoTracking()
             .Where(c => c.EntryId == entryId && c.Number == number)
             .Select(c => new ChunkModel(

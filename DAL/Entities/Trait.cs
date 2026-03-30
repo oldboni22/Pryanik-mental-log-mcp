@@ -2,7 +2,7 @@ using Domain.Interfaces;
 
 namespace Domain.Entities;
 
-public sealed class Trait : ITimeStamp, IId
+public sealed class Trait : ITimeStamp, IId, IEmbedding
 {
     public Guid Id { get; init; }
     

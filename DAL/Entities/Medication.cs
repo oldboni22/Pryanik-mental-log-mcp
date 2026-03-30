@@ -2,7 +2,7 @@ using Domain.Interfaces;
 
 namespace Domain.Entities;
 
-public sealed class Medication : IId
+public sealed class Medication : IId, IEmbedding
 {
     public Guid Id { get; init; }
     

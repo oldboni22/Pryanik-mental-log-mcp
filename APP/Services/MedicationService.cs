@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using APP.DataModels.Medication;
 using Domain;
 using Domain.Entities;
@@ -5,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace APP.Services;
 
-public sealed class MedicationService(LogContext context, IEmbedService embed) : ServiceWithEmbeddingBase(embed)
+public sealed class MedicationService(LogContext context, IEmbedService embed) : ServiceWithEmbeddingBase(context, embed)
 {
     public async Task CreateMedication(string name, string prescriptionRequired, string description, bool currentlyTaking)
     {
@@ -20,13 +21,13 @@ public sealed class MedicationService(LogContext context, IEmbedService embed) :
             Embedding = embedding
         };
         
-        context.Medications.Add(medication);
-        await context.SaveChangesAsync();
+        LogContext.Medications.Add(medication);
+        await LogContext.SaveChangesAsync();
     }
 
     public async Task<bool> UpdateTakingStatus(Guid medicationId, bool newStatus)
     {
-        var result = await context.Medications
+        var result = await LogContext.Medications
             .Where(med => med.Id == medicationId)
             .ExecuteUpdateAsync(prop =>
                 prop.SetProperty(med => med.CurrentlyTaking, newStatus));
@@ -36,32 +37,22 @@ public sealed class MedicationService(LogContext context, IEmbedService embed) :
 
     public async Task RemoveMedication(Guid medicationId)
     {
-        await context.Medications
+        await LogContext.Medications
             .Where(med => med.Id == medicationId)
             .ExecuteDeleteAsync();
     }
 
+    private static readonly Expression<Func<Medication, MedicationModel>> MedicationMaterializer =
+        med => new MedicationModel(med.Id, med.Name, med.Description, med.PrescriptionRequired, med.CurrentlyTaking);
+    
     public async Task<List<MedicationModel>> GetSemanticMedication(string query, int outputLimit, float minScore)
     {
-        var queryVec = EmbedService.GenerateEmbedding(query);
-        
-        var medsMetadata = await context.Medications
-            .AsNoTracking()
-            .Select(med => new { id = med.Id, vec = med.Embedding })
-            .ToListAsync();
-
-        var matchesIds = medsMetadata
-            .Select(x => new { x.id, score = CalculateSimilarity(queryVec, x.vec) })
-            .Where(x => x.score >= minScore)
-            .OrderByDescending(x => x.score)
-            .Select(x => x.id)
-            .Take(outputLimit)
-            .ToList();
-        
-        return await context.Medications
-            .Where(med => matchesIds.Contains(med.Id))
-            .Select(med => 
-                new MedicationModel(med.Id, med.Name, med.Description, med.PrescriptionRequired, med.CurrentlyTaking))
-            .ToListAsync();
+        return await GetSemantic(
+            LogContext,
+            EmbedService,
+            MedicationMaterializer,
+            query,
+            outputLimit,
+            minScore);
     }
 }

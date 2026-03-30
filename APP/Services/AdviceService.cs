@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using APP.DataModels;
 using APP.DataModels.Advice;
 using Domain;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace APP.Services;
 
-public sealed class AdviceService(LogContext context, IEmbedService embed) : ServiceWithEmbeddingBase(embed)
+public sealed class AdviceService(LogContext context, IEmbedService embed) : ServiceWithEmbeddingBase(context, embed)
 {
     public async Task CreateAdvice(string topic, string summary, string text, Guid? sourceEntryId)
     {
@@ -21,20 +22,20 @@ public sealed class AdviceService(LogContext context, IEmbedService embed) : Ser
             Embedding = embedding
         };
         
-        context.Advices.Add(advice);
-        await context.SaveChangesAsync();
+        LogContext.Advices.Add(advice);
+        await LogContext.SaveChangesAsync();
     }
     
     public async Task RemoveAdvice(Guid adviceId)
     {
-        await context.Advices
+        await LogContext.Advices
             .Where(a => a.Id == adviceId)
             .ExecuteDeleteAsync();
     }
     
     public async Task<List<AdviceSummaryModel>> GetRecentAdviceSummaries(int outputLimit)
     {
-        return await context.Advices
+        return await LogContext.Advices
             .AsNoTracking()
             .OrderByDescending(a => a.TimeStamp)
             .Take(outputLimit)
@@ -44,46 +45,31 @@ public sealed class AdviceService(LogContext context, IEmbedService embed) : Ser
     
     public async Task<FullAdviceModel?> GetFullAdvice(Guid  adviceId)
     {
-        return await context.Advices
+        return await LogContext.Advices
             .AsNoTracking()
             .Where(a => a.Id == adviceId)
             .Select(a => new FullAdviceModel(a.Id, a.Text, a.Topic, a.Summary, a.TimeStamp, a.SourceEntryId))
             .FirstOrDefaultAsync();
     }
 
+    private static readonly Expression<Func<Advice, AdviceSummaryModel>> AdviceSummaryMaterializer =
+        a => new AdviceSummaryModel(a.Id, a.Topic, a.Summary, a.TextLength, a.TimeStamp, a.SourceEntryId);
+    
     public async Task<List<AdviceSummaryModel>> GetSemanticAdviceSummary(string query, int outputLimit, float minScore)
     {
-        var queryVec = EmbedService.GenerateEmbedding(query);
-        
-        var advicesMetadata = await context.Advices
-            .AsNoTracking()
-            .Select(a => new
-            {
-                vec = a.Embedding,
-                id = a.Id,
-            })
-            .ToListAsync();
-        
-        var matchesIds = advicesMetadata
-            .Select(res => new {res.id, score = CalculateSimilarity(queryVec, res.vec)})
-            .Where(res => res.score >= minScore)
-            .OrderByDescending(res => res.score)
-            .Select(res => res.id)
-            .Take(outputLimit)
-            .ToList();
-
-        var results = await context.Advices
-            .AsNoTracking()
-            .Where(a => matchesIds.Contains(a.Id))
-            .Select(a => new AdviceSummaryModel(a.Id, a.Topic, a.Summary, a.TextLength, a.TimeStamp, a.SourceEntryId))
-            .ToListAsync();
-        
-        return results.OrderBy(r => matchesIds.IndexOf(r.AdviceId)).ToList();
+        return await GetSemantic(
+            LogContext,
+            EmbedService,
+            AdviceSummaryMaterializer,
+            query,
+            outputLimit,
+            minScore
+        );
     }
 
     public async Task<List<AdviceSummaryModel>> GetEntryAdviceSummaries(Guid entryId)
     {
-        return await context.Advices
+        return await LogContext.Advices
             .AsNoTracking()
             .Where(a => a.SourceEntryId == entryId)
             .Select(a => new AdviceSummaryModel(a.Id, a.Topic, a.Summary, a.TextLength, a.TimeStamp, a.SourceEntryId))
