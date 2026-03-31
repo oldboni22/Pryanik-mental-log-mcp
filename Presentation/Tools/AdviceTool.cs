@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.Text.Json;
-using APP;
 using APP.Services;
 using ModelContextProtocol.Server;
 
@@ -9,66 +8,33 @@ namespace Presentation.Tools;
 [McpServerToolType]
 public static class AdviceTool
 {
-    private const string LimitDescription = "The limit of fetched advices.";
-    
     [McpServerTool, Description("Creates a new advice.")]
     public static async Task<string> CreateAdvice(
         AdviceService service,
-        [Description("The topic of the advice.")] string topic,
-        [Description("The summary of the advice.")] string summary,
-        [Description("The text of the advice.")] string text,
-        [Description("The id of the related entry.")] Guid? sourceEntryId)
+        [Description("Advice topic.")] string topic,
+        [Description("Advice summary.")] string summary,
+        [Description("Full advice text.")] string text,
+        [Description("Source entry ID.")] Guid? sourceEntryId)
     {
-        await  service.CreateAdvice(topic, summary, text, sourceEntryId);
-        
-        return "Advice created successfully.";
+        await service.CreateAdvice(topic, summary, text, sourceEntryId);
+        return ToolMetadata.Created;
     }
 
-    [McpServerTool, Description("Remove a specific advice.")]
+    [McpServerTool, Description("Removes a specific advice.")]
     public static async Task<string> RemoveAdvice(
         AdviceService service,
-        [Description("The id of the desired advice.")] Guid adviceId)
+        [Description(ToolMetadata.AdviceId)] Guid adviceId)
     {
         await service.RemoveAdvice(adviceId);
-        
-        return "Advice removed successfully.";
-    }
-    
-    [McpServerTool, Description("Get recent advice summaries.")]
-    public static async Task<string> GetRecentAdviceSummaries(
-        AdviceService service,
-        [Description(LimitDescription)] int outputLimit)
-    {
-        var summaries = await service.GetRecentAdviceSummaries(outputLimit);
-        return JsonSerializer.Serialize(summaries);
+        return ToolMetadata.Removed;
     }
 
-    [McpServerTool, Description("Get summaries of the advices related to the target entry.")]
-    public static async Task<string> GetEntryAdviceSummaries(
-        AdviceService service,
-        [Description("The id of the target entry.")] Guid entryId)
-    {
-        var summaries = await service.GetEntryAdviceSummaries(entryId);
-        return JsonSerializer.Serialize(summaries);
-    }
-    
-    [McpServerTool, Description("Get full content of the advice.")]
-    public static async Task<string> GetFullAdvice(
-        AdviceService service,
-        [Description("The id of the desired advice.")] Guid adviceId)
-    {
-        var advice = await service.GetFullAdvice(adviceId);
-        return advice is null 
-            ? "Advice not found."
-            : JsonSerializer.Serialize(advice);
-    }
-
-    [McpServerTool, Description("Get summaries of advices matching the query.")]
+    [McpServerTool, Description("Finds advice using semantic search.")]
     public static async Task<string> GetSemanticAdviceSummary(
         AdviceService service,
-        [Description("The query.")] string query,
-        [Description(LimitDescription)] int outputLimit,
-        [Description("The minimum similarity score threshold.")] float minScore)
+        [Description(ToolMetadata.Query)] string query,
+        [Description(ToolMetadata.Limit)] int outputLimit,
+        [Description(ToolMetadata.MinScore)] float minScore)
     {
         var summaries = await service.GetSemanticAdviceSummary(query, outputLimit, minScore);
         return JsonSerializer.Serialize(summaries);
