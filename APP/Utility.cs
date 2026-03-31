@@ -12,7 +12,9 @@ public static class Utility
             return services
                 .AddSingleton<IEmbedService, LocalEmbedService>()
                 .AddScoped<EntryService>()
-                .AddScoped<AdviceService>();
+                .AddScoped<AdviceService>()
+                .AddScoped<MedicationService>()
+                .AddScoped<TraitService>();
         }
     }
 }

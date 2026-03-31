@@ -178,7 +178,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("EntryId");
 
-                    b.ToTable("TraitEntryRelation");
+                    b.ToTable("TraitEntryRelations");
                 });
 
             modelBuilder.Entity("Domain.Entities.Advice", b =>
