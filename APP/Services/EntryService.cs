@@ -9,7 +9,16 @@ namespace APP.Services;
 
 public sealed class EntryService(LogContext context, IEmbedService embed) : ServiceWithEmbeddingBase(context, embed)
 {
-    public async Task CreateEntry(string summary, string[] chunks)
+    private static readonly Expression<Func<EntryChunk, ChunkModel>> ChunkMaterializer =
+        c => new ChunkModel(c.Text, c.EntryId, c.Entry.Summary, c.Entry.TimeStamp, c.Number, c.Entry.TotalChunks, c.Entry.TextLength)
+        {
+            Id = c.Id,
+        };
+
+    private static readonly Expression<Func<Entry, EntrySummaryModel>> EntrySummaryMaterializer =
+        e => new EntrySummaryModel(e.Id, e.Summary, e.TextLength, e.TimeStamp);
+    
+    public async Task CreateEntry(string summary, string[] chunks, Guid[]? relatedTraitIds)
     {
         var entry = new Entry
         {
@@ -32,6 +41,20 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
             
             LogContext.EntryChunks.Add(chunk);
         }
+
+        if (relatedTraitIds is not null)
+        {
+            foreach (var traitId in relatedTraitIds)
+            {
+                var relation = new TraitEntryRelation
+                {
+                    TraitId = traitId,
+                    EntryId = entry.Id,
+                };
+
+                LogContext.TraitEntryRelations.Add(relation);
+            }
+        }
         
         LogContext.Add(entry);
         await LogContext.SaveChangesAsync();
@@ -50,7 +73,7 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
             .AsNoTracking()
             .OrderByDescending(e => e.TimeStamp)
             .Take(outputLimit)
-            .Select(e => new EntrySummaryModel(e.Id, e.Summary, e.TextLength, e.TimeStamp))
+            .Select(EntrySummaryMaterializer)
             .ToListAsync();
     }
 
@@ -63,12 +86,15 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
             .FirstOrDefaultAsync();
     }
 
-    private static readonly Expression<Func<EntryChunk, ChunkModel>> ChunkMaterializer =
-        c => new ChunkModel(c.Text, c.EntryId, c.Entry.Summary, c.Entry.TimeStamp, c.Number, c.Entry.TotalChunks, c.Entry.TextLength)
-        {
-            Id = c.Id,
-        };
-
+    public async Task<List<EntrySummaryModel>> GetRelatedSummaries(Guid traitId)
+    {
+        return await LogContext.Entries
+            .Where(e => LogContext.TraitEntryRelations
+                .Any(rel => rel.EntryId == e.Id && rel.TraitId == traitId))
+            .Select(EntrySummaryMaterializer)
+            .ToListAsync();
+    }
+    
     public async Task<List<ChunkModel>> GetSemanticChunks(string query, int outputLimit, float minScore)
     {
         return await GetSemantic(
@@ -85,8 +111,7 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
         return await LogContext.EntryChunks
             .AsNoTracking()
             .Where(c => c.EntryId == entryId && c.Number == number)
-            .Select(c => new ChunkModel(
-                c.Text, c.EntryId, c.Entry.Summary, c.Entry.TimeStamp,c.Number, c.Entry.TotalChunks, c.Entry.TextLength))
+            .Select(ChunkMaterializer)
             .FirstOrDefaultAsync();
     }
 }

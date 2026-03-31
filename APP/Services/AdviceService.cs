@@ -39,7 +39,7 @@ public sealed class AdviceService(LogContext context, IEmbedService embed) : Ser
             .AsNoTracking()
             .OrderByDescending(a => a.TimeStamp)
             .Take(outputLimit)
-            .Select(a => new AdviceSummaryModel(a.Id, a.Topic, a.Summary, a.TextLength, a.TimeStamp, a.SourceEntryId))
+            .Select(AdviceSummaryMaterializer)
             .ToListAsync();
     }
     
@@ -72,7 +72,7 @@ public sealed class AdviceService(LogContext context, IEmbedService embed) : Ser
         return await LogContext.Advices
             .AsNoTracking()
             .Where(a => a.SourceEntryId == entryId)
-            .Select(a => new AdviceSummaryModel(a.Id, a.Topic, a.Summary, a.TextLength, a.TimeStamp, a.SourceEntryId))
+            .Select(AdviceSummaryMaterializer)
             .ToListAsync();
     }
 }

@@ -8,14 +8,14 @@ namespace APP.Services;
 
 public sealed class MedicationService(LogContext context, IEmbedService embed) : ServiceWithEmbeddingBase(context, embed)
 {
-    public async Task CreateMedication(string name, string prescriptionRequired, string description, bool currentlyTaking)
+    public async Task CreateMedication(string name, bool prescriptionRequired, string description, bool currentlyTaking)
     {
         var embedding = EmbedService.GenerateEmbedding(description);
         
         var medication = new Medication
         {
             Name = name,
-            PrescriptionRequired = currentlyTaking,
+            PrescriptionRequired = prescriptionRequired,
             CurrentlyTaking = currentlyTaking,
             Description = description,
             Embedding = embedding

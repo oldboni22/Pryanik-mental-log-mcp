@@ -18,6 +18,8 @@ public sealed class LogContext : DbContext
     
     public DbSet<Trait>  Traits { get; set; }
     
+    public DbSet<TraitEntryRelation>  TraitEntryRelations { get; set; }
+    
     public DbSet<Medication>  Medications { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
