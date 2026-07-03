@@ -10,7 +10,7 @@ public sealed class Medication : IId, IEmbedding
     
     public required string Description { get; init; }
     
-    public float[] Embedding { get; init; }
+    public required byte[] Embedding { get; init; }
     
     public bool CurrentlyTaking  { get; set; }
     

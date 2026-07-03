@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using APP.DataModels;
 using APP.DataModels.Entry;
 using Domain;
 using Domain.Entities;
@@ -98,8 +97,6 @@ public sealed class EntryService(LogContext context, IEmbedService embed) : Serv
     public async Task<List<ChunkModel>> GetSemanticChunks(string query, int outputLimit, float minScore)
     {
         return await GetSemantic(
-            LogContext,
-            EmbedService,
             ChunkMaterializer,
             query,
             outputLimit,

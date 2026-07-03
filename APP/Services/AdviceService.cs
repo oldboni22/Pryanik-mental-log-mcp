@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using APP.DataModels;
 using APP.DataModels.Advice;
 using Domain;
 using Domain.Entities;
@@ -58,8 +57,6 @@ public sealed class AdviceService(LogContext context, IEmbedService embed) : Ser
     public async Task<List<AdviceSummaryModel>> GetSemanticAdviceSummary(string query, int outputLimit, float minScore)
     {
         return await GetSemantic(
-            LogContext,
-            EmbedService,
             AdviceSummaryMaterializer,
             query,
             outputLimit,

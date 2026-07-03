@@ -71,8 +71,6 @@ public sealed class TraitService(LogContext context, IEmbedService embedService)
     public async Task<List<TraitModel>> GetSemanticTraits(string query, int outputLimit, float minScore)
     {
         return await GetSemantic(
-            LogContext, 
-            EmbedService, 
             TraitMaterializer,
             query,
             outputLimit,

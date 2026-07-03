@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Domain.Interfaces;
 
 namespace Domain.Entities;
@@ -15,7 +14,7 @@ public sealed class EntryChunk : IText, IId, IEmbedding
     
     public int TextLength { get; set; }
 
-    public required float[] Embedding { get; init; }
+    public required byte[] Embedding { get; init; }
 
     public Entry Entry { get; init; } = null!;
 }
