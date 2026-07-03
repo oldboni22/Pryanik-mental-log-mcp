@@ -23,9 +23,9 @@ namespace Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.PrimitiveCollection<string>("Embedding")
+                    b.Property<byte[]>("Embedding")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("BLOB");
 
                     b.Property<string>("SourceEntryId")
                         .HasColumnType("TEXT");
@@ -89,9 +89,9 @@ namespace Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.PrimitiveCollection<string>("Embedding")
+                    b.Property<byte[]>("Embedding")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("BLOB");
 
                     b.Property<string>("EntryId")
                         .IsRequired()
@@ -128,9 +128,9 @@ namespace Domain.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.PrimitiveCollection<string>("Embedding")
+                    b.Property<byte[]>("Embedding")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("BLOB");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -154,9 +154,9 @@ namespace Domain.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.PrimitiveCollection<string>("Embedding")
+                    b.Property<byte[]>("Embedding")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("BLOB");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("TEXT");

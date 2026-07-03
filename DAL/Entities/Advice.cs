@@ -20,5 +20,5 @@ public sealed class Advice : ITimeStamp, IText, IId, IEmbedding
     
     public int TextLength { get; set; }
 
-    public required float[] Embedding { get; init; }
+    public required byte[] Embedding { get; init; }
 }

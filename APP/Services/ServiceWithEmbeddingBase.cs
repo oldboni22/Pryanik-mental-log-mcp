@@ -1,5 +1,6 @@
+using System.Buffers;
 using System.Linq.Expressions;
-using APP.DataModels.Advice;
+using System.Numerics.Tensors;
 using Domain;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -12,37 +13,40 @@ public abstract class ServiceWithEmbeddingBase(LogContext context, IEmbedService
     
     protected IEmbedService EmbedService => embedService;
     
-    protected static float CalculateSimilarity(float[] v1, float[] v2)
-    {
-        return v1.Zip(v2, (a, b) => a * b).Sum();
-    }
-
-    protected static async Task<List<TModel>> GetSemantic<TEntity, TModel>(
-        LogContext context,
-        IEmbedService embedService,
+    protected async Task<List<TModel>> GetSemantic<TEntity, TModel>(
         Expression<Func<TEntity, TModel>> materializer,
-        string query, int outputLimit, float minScore)
+        string query,
+        int outputLimit, 
+        float minScore)
         where TEntity : class, IId, IEmbedding
         where TModel : class, IId
     {
         var queryVec = embedService.GenerateEmbedding(query);
 
-        var metadata = await context.Set<TEntity>()
-            .AsNoTracking()
-            .Select(x => new
-            {
-                vec = x.Embedding,
-                id = x.Id,
-            })
-            .ToListAsync();
+        var priorityQueue = new PriorityQueue<Guid, float>(Comparer<float>.Create((x, y) => y.CompareTo(x)));
 
-        var matchesIds = metadata
-            .Select(res => new { res.id, score = CalculateSimilarity(queryVec, res.vec) })
-            .Where(res => res.score >= minScore)
-            .OrderByDescending(res => res.score)
-            .Select(res => res.id)
-            .Take(outputLimit)
-            .ToList();
+        var queryStream = context.Set<TEntity>()
+            .AsNoTracking()
+            .Select(x => new { x.Id, x.Embedding })
+            .AsAsyncEnumerable();
+
+        await foreach (var row in queryStream)
+        {
+            var score = TensorPrimitives.Dot(queryVec, row.Embedding);
+
+            if (score >= minScore)
+            {
+                priorityQueue.Enqueue(row.Id, score);
+            }
+        }
+
+        var matchesIds = new List<Guid>(outputLimit);
+        while (priorityQueue.TryDequeue(out var id, out _) && matchesIds.Count < outputLimit)
+        {
+            matchesIds.Add(id);
+        }
+
+        if (matchesIds.Count == 0) return [];
 
         var results = await context.Set<TEntity>()
             .AsNoTracking()
@@ -50,6 +54,10 @@ public abstract class ServiceWithEmbeddingBase(LogContext context, IEmbedService
             .Select(materializer)
             .ToListAsync();
 
-        return results.OrderBy(r => matchesIds.IndexOf(r.Id)).ToList();
+        var idOrderMap = results
+            .Select((m, index) => (m.Id, index))
+            .ToDictionary(x => x.Id, x => x.index);
+
+        return results.OrderBy(r => idOrderMap[r.Id]).ToList();
     }
 }

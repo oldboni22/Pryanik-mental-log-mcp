@@ -10,7 +10,7 @@ public sealed class Trait : ITimeStamp, IId, IEmbedding
     
     public required string Description { get; init; }
     
-    public float[] Embedding { get; init; }
+    public required byte[] Embedding { get; init; }
     
     public IEnumerable<TraitEntryRelation> TraitRelations { get; init; } = new List<TraitEntryRelation>();
 }

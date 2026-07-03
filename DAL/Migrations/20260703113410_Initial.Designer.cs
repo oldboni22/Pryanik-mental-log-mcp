@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Domain.Migrations
 {
     [DbContext(typeof(LogContext))]
-    [Migration("20260329212306_normalise chunk count")]
-    partial class normalisechunkcount
+    [Migration("20260703113410_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,9 +26,9 @@ namespace Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.PrimitiveCollection<string>("Embedding")
+                    b.Property<byte[]>("Embedding")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("BLOB");
 
                     b.Property<string>("SourceEntryId")
                         .HasColumnType("TEXT");
@@ -58,39 +58,7 @@ namespace Domain.Migrations
                     b.ToTable("Advices");
                 });
 
-            modelBuilder.Entity("Domain.Entities.EntryChunk", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.PrimitiveCollection<string>("Embedding")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("EntryId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Number")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("TextLength")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EntryId", "Number")
-                        .IsUnique();
-
-                    b.ToTable("EntryChunks");
-                });
-
-            modelBuilder.Entity("Domain.Entities.LogEntry", b =>
+            modelBuilder.Entity("Domain.Entities.Entry", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
@@ -118,9 +86,107 @@ namespace Domain.Migrations
                     b.ToTable("Entries");
                 });
 
+            modelBuilder.Entity("Domain.Entities.EntryChunk", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("Embedding")
+                        .IsRequired()
+                        .HasColumnType("BLOB");
+
+                    b.Property<string>("EntryId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("TextLength")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntryId", "Number")
+                        .IsUnique();
+
+                    b.ToTable("EntryChunks");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Medication", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("CurrentlyTaking")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("Embedding")
+                        .IsRequired()
+                        .HasColumnType("BLOB");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("PrescriptionRequired")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Medications");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Trait", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("Embedding")
+                        .IsRequired()
+                        .HasColumnType("BLOB");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Traits");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TraitEntryRelation", b =>
+                {
+                    b.Property<string>("TraitId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EntryId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("TraitId", "EntryId");
+
+                    b.HasIndex("EntryId");
+
+                    b.ToTable("TraitEntryRelations");
+                });
+
             modelBuilder.Entity("Domain.Entities.Advice", b =>
                 {
-                    b.HasOne("Domain.Entities.LogEntry", "SourceEntry")
+                    b.HasOne("Domain.Entities.Entry", "SourceEntry")
                         .WithMany("Advices")
                         .HasForeignKey("SourceEntryId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -130,7 +196,7 @@ namespace Domain.Migrations
 
             modelBuilder.Entity("Domain.Entities.EntryChunk", b =>
                 {
-                    b.HasOne("Domain.Entities.LogEntry", "Entry")
+                    b.HasOne("Domain.Entities.Entry", "Entry")
                         .WithMany("Chunks")
                         .HasForeignKey("EntryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -139,11 +205,33 @@ namespace Domain.Migrations
                     b.Navigation("Entry");
                 });
 
-            modelBuilder.Entity("Domain.Entities.LogEntry", b =>
+            modelBuilder.Entity("Domain.Entities.TraitEntryRelation", b =>
+                {
+                    b.HasOne("Domain.Entities.Entry", null)
+                        .WithMany("TraitRelations")
+                        .HasForeignKey("EntryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Trait", null)
+                        .WithMany("TraitRelations")
+                        .HasForeignKey("TraitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.Entry", b =>
                 {
                     b.Navigation("Advices");
 
                     b.Navigation("Chunks");
+
+                    b.Navigation("TraitRelations");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Trait", b =>
+                {
+                    b.Navigation("TraitRelations");
                 });
 #pragma warning restore 612, 618
         }

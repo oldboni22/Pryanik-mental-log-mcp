@@ -48,8 +48,6 @@ public sealed class MedicationService(LogContext context, IEmbedService embed) :
     public async Task<List<MedicationModel>> GetSemanticMedication(string query, int outputLimit, float minScore)
     {
         return await GetSemantic(
-            LogContext,
-            EmbedService,
             MedicationMaterializer,
             query,
             outputLimit,
